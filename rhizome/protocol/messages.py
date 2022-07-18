@@ -53,7 +53,10 @@ class StateMessage(Message):
 
     def __init__(self, sender_id: str = None, state: RhizomeState = None):
         super(StateMessage, self).__init__(sender_id, self.message_type)
-        self.state = state.serialize()
+        if state:
+            self.state = state.serialize()
+        else:
+            self.state = None
 
 
 def get_message_type(message_data: bytes):

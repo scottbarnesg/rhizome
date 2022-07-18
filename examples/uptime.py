@@ -4,6 +4,7 @@ Calculates uptime in seconds, incrementing every counter_interval
 import time
 
 from rhizome.lib.protocol import RhizomeProtocol
+from rhizome.lib.state import RhizomeState
 
 if __name__ == '__main__':
     import argparse
@@ -26,5 +27,7 @@ if __name__ == '__main__':
         if last_update_time + counter_interval > time.monotonic():
             time.sleep(last_update_time + counter_interval - time.monotonic())
         counter += counter_interval
+        state = RhizomeState("example", {"counter": counter, "counter_interval": counter_interval})
+        rhizome.share_state(state)
         print(f"Uptime: {counter} seconds")
         last_update_time = time.monotonic()

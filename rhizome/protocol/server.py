@@ -25,6 +25,19 @@ class RhizomeConnectionHandler(socketserver.StreamRequestHandler):
         # Reply with broadcast response
         response = BroadcastResponse(self.server.sender_id)
         self.request.sendall(response.encode())
+        # TODO: Get state messages and push to queue
+        while message_data:
+            # Read data from socket
+            message_data = self.request.recv(self.BUFFER_SIZE).strip()
+            if not message_data:
+                break
+            # Convert into message class
+            message_type = get_message_type(message_data)
+            message = message_type()
+            message.decode(message_data)
+            # Push message to server queue
+            self.server.add_message(message)
+
 
 
 class RhizomeServer(socketserver.TCPServer):

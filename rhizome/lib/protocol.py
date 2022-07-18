@@ -26,8 +26,8 @@ class RhizomeProtocol:
         message = BroadcastMessage(self.id, self.listen_hostname, self.listen_port)
         try:
             self.rhizome_client.send_message(message, node_hostname, node_port)  # TODO: Need to broadcast instead of specifying IP here
-            broadcast_response = self.rhizome_client.wait_for_message(BroadcastMessage)
-            new_peer = Peer(broadcast_response.sender_id, broadcast_response.hostname, broadcast_response.port)
+            broadcast_response, sender_address = self.rhizome_client.wait_for_message(BroadcastMessage)
+            new_peer = Peer(broadcast_response.sender_id, sender_address[0], sender_address[1])
             KnownPeers().add_peer(new_peer)
         except ConnectionError:
             return
@@ -36,4 +36,5 @@ class RhizomeProtocol:
         # Emit StateMessage to known peers
         for peer in KnownPeers().get_peers():
             message = StateMessage(self.id, state)
+            print(message.encode())
             self.rhizome_client.send_message(message, peer.get_addr()[0], peer.get_addr()[1])
